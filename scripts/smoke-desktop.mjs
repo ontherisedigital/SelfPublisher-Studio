@@ -100,6 +100,9 @@ try {
   check((await evaluate('document.title')) === 'SelfPublisher Studio', 'window title');
   check((await evaluate('typeof window.kdpDesktop?.saveFile')) === 'function', 'desktop bridge exposed to the page');
   check((await evaluate('typeof require + typeof process')) === 'undefinedundefined', 'Node is not exposed to the page');
+  check((await evaluate("!document.querySelector('[data-screen=\"publish\"]').hidden")) === true, 'opens on the Publish tab');
+  await evaluate(`document.querySelector('[data-tab="cover"]').click()`);
+  await sleep(500);
   const canvas = await evaluate("document.getElementById('canvas-primary').textContent");
   console.log(`      default canvas: ${canvas}`);
   check(/12\.7004" . 9\.25"/.test(canvas), 'default 6x9 / 200pp canvas = 12.7004" x 9.25"');
