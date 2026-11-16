@@ -14,7 +14,7 @@ import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PDFDocument } from 'pdf-lib';
-import { buildInteriorPdf, computeCoverLayout, planInterior, type CoverInput, type CoverLayout } from '../src/core';
+import { buildInteriorPdf, computeCoverLayout, planInterior, writeZip, type CoverInput, type CoverLayout } from '../src/core';
 
 const require = createRequire(import.meta.url);
 const electronPath: string = require('electron');
@@ -356,6 +356,7 @@ async function resetApp(): Promise<void> {
   await js(`localStorage.clear()`);
   await cdp.send('Page.reload', { ignoreCache: true });
   await sleep(900);
+  await js(`document.querySelector('[data-tab="cover"]').click()`);
   await waitFor(`document.getElementById('canvas-primary')?.textContent.length > 1`);
   await js(CURSOR_JS);
   await js(`window.scrollTo(0, 0)`);
@@ -370,7 +371,7 @@ async function setBook(b: { binding?: 'paperback' | 'hardcover'; trim?: string; 
   await sleep(400);
 }
 
-async function tab(id: 'cover' | 'ebook' | 'preflight' | 'mockup' | 'interior' | 'designer' | 'puzzles'): Promise<void> {
+async function tab(id: 'publish' | 'cover' | 'ebook' | 'preflight' | 'mockup' | 'interior' | 'designer' | 'puzzles'): Promise<void> {
   await js(`document.querySelector('[data-tab="${id}"]').click()`);
   await sleep(500);
 }
@@ -487,6 +488,139 @@ async function screenshots(): Promise<void> {
   await shot('06b-mockup-stage', '#mock-stage');
 }
 
+/** A fictional novel manuscript as a Word file, for the Publish tab. */
+function novelDocx(): Uint8Array {
+  const lines = [
+    'The rain had not stopped for three days, and the harbour lights blurred into the fog.',
+    'Mara pulled her coat tighter and watched the lantern in the keeper’s window burn lower.',
+    '“You came back,” said the old man, without looking up from his nets.',
+    'She had promised herself she never would. Some promises are made to be broken by the sea.',
+    'Nobody in Port Ellery spoke of that winter, not even now, not even in the warm back room of the inn.',
+    'Somewhere below the cliff the waves hammered at the rocks, patient as they had always been.',
+    'She set her bag down on the wet stones and let the wind take her breath away.',
+    'The keeper’s cottage stood dark against the sky, its single light a question nobody had answered.',
+  ];
+  let seed = 7;
+  const rnd = () => (seed = (seed * 9301 + 49297) % 233280) / 233280;
+  const esc = (t: string) => t.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+  const P = (inner: string, ppr = '') => `<w:p><w:pPr>${ppr}</w:pPr>${inner}</w:p>`;
+  const R = (t: string, i = false) => `<w:r>${i ? '<w:rPr><w:i/></w:rPr>' : ''}<w:t xml:space="preserve">${esc(t)}</w:t></w:r>`;
+  const titles = ['The Keeper’s Light', 'Salt and Silence', 'What the Tide Left', 'A Letter in the Lantern', 'Port Ellery', 'The Winter Storm', 'Below the Cliff', 'The Inn at Low Water', 'Returning', 'The Last Lantern'];
+  let body = '';
+  titles.forEach((t, c) => {
+    body += P(R(`Chapter ${c + 1}`), '<w:pStyle w:val="Heading1"/>') + P(R(t), '<w:pStyle w:val="Heading2"/>');
+    const n = 34 + Math.floor(rnd() * 12);
+    for (let k = 0; k < n; k++) {
+      if (k === 18) {
+        body += P(R('* * *'), '<w:jc w:val="center"/>');
+        continue;
+      }
+      const sent = Array.from({ length: 3 + Math.floor(rnd() * 5) }, () => lines[Math.floor(rnd() * lines.length)]).join(' ');
+      body += P(R(sent + ' ') + (k % 6 === 3 ? R('It was never only the sea.', true) : ''));
+    }
+  });
+  const doc = `<?xml version="1.0" encoding="UTF-8"?><w:document xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:body>${body}</w:body></w:document>`;
+  const styles = `<?xml version="1.0"?><w:styles xmlns:w="http://schemas.openxmlformats.org/wordprocessingml/2006/main"><w:style w:type="paragraph" w:styleId="Heading1"><w:name w:val="heading 1"/></w:style><w:style w:type="paragraph" w:styleId="Heading2"><w:name w:val="heading 2"/></w:style></w:styles>`;
+  return writeZip([
+    { name: 'word/document.xml', data: doc },
+    { name: 'word/styles.xml', data: styles },
+  ]);
+}
+
+/** Load the novel on Publish, fill in the book details and wait for the typeset preview. */
+async function publishSetup(): Promise<number> {
+  await resetApp();
+  await setBook({ trim: '5.5x8.5', paper: 'bw-cream' });
+  await tab('publish');
+  await upload('pub-file', 'the-last-lantern.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', novelDocx());
+  await waitFor(`!document.getElementById('pub-preview-card').hidden`, 60000);
+  await js(`(() => {
+    const set = (id, v) => { const e = document.getElementById(id); e.value = v; e.dispatchEvent(new Event('input', { bubbles: true })); };
+    set('pub-subtitle', 'A Novel');
+    set('pub-author', 'Mara Ellison');
+    set('pub-copyright', ['Copyright © 2026 Mara Ellison', 'All rights reserved.', 'ISBN 978-1-7363401-2-7'].join(String.fromCharCode(10)));
+    set('pub-dedication', 'For the keepers of the light.');
+    const r = document.getElementById('pub-recto'); r.checked = true; r.dispatchEvent(new Event('change', { bubbles: true }));
+  })()`);
+  await sleep(1500);
+  await waitFor(`!/Typesetting/.test(document.getElementById('pub-file-status').textContent)`, 60000);
+  await sleep(1500);
+  return js<number>(`Number(document.getElementById('pages').value)`);
+}
+
+async function publishCover(pages: number): Promise<void> {
+  const l = computeCoverLayout({ trimWidth: 5.5, trimHeight: 8.5, trimId: '5.5x8.5', pageCount: pages, paper: 'bw-cream', readingDirection: 'ltr' });
+  const wrap = await artToPdf(await makeArt(l, 'woodland', 11), l.canvas.w, l.canvas.h);
+  await upload('pub-cover-file', 'the-last-lantern-cover.pdf', 'application/pdf', wrap);
+  await waitFor(`!document.getElementById('pub-cover-verdict').hidden`, 30000);
+  await sleep(800);
+}
+
+/** Publish: manuscript in, KDP files out. */
+async function publishShots(): Promise<void> {
+  await viewport(1440, 1000, 2);
+  await theme();
+  const pages = await publishSetup();
+  await js(`window.scrollTo(0, 0)`);
+  await sleep(500);
+  await shot('00-publish-manuscript');
+  await scrollTo('#pub-style-card', -90);
+  await shot('00b-publish-book-style');
+  // A chapter opening spread.
+  await js(`(() => { for (let i = 0; i < 2; i++) document.getElementById('pub-next').click(); })()`);
+  await sleep(2500);
+  await scrollTo('#pub-preview-card', -90);
+  await shot('00c-publish-preview');
+  await js(`document.getElementById('pub-next').click()`);
+  await sleep(2500);
+  await shot('00d-publish-spread', '.spread-wrap');
+  await publishCover(pages);
+  await scrollTo('#pub-cover-card', -90);
+  await shot('00e-publish-cover-check');
+  await scrollTo('#pub-export-card', -200);
+  await shot('00f-publish-files-for-kdp');
+}
+
+async function publishVideo(): Promise<void> {
+  await viewport(1440, 900, 1);
+  await theme();
+  await resetApp();
+  await setBook({ trim: '5.5x8.5', paper: 'bw-cream' });
+  await tab('publish');
+  await record('selfpublisher-studio-publish', async () => {
+    await sleep(1200);
+    await pretendClick('#pub-drop');
+    await upload('pub-file', 'the-last-lantern.docx', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', novelDocx());
+    await waitFor(`!document.getElementById('pub-preview-card').hidden`, 60000);
+    await sleep(1200);
+    await scrollTo('#pub-style-card', -90, 900);
+    await typeInto('#pub-author', 'Mara Ellison');
+    await sleep(400);
+    await setSelect('#pub-font', 'baskerville');
+    await sleep(2500);
+    await scrollTo('#pub-preview-card', -90, 900);
+    await sleep(1200);
+    for (let i = 0; i < 3; i++) {
+      await click('#pub-next');
+      await sleep(1100);
+    }
+    const pages = await js<number>(`Number(document.getElementById('pages').value)`);
+    await scrollTo('#pub-cover-card', -90, 900);
+    await sleep(800);
+    await pretendClick('#pub-cover-drop');
+    await publishCover(pages);
+    await sleep(1800);
+    await scrollTo('#pub-export-card', -200, 900);
+    await sleep(800);
+    await click('#pub-dl-interior');
+    await sleep(1200);
+    await click('#pub-dl-cover');
+    await sleep(1200);
+    await click('#pub-dl-epub');
+    await sleep(2000);
+  });
+}
+
 /** A clean 6 x 9 journal interior and a wrongly sized one, for the interior preflight. */
 async function interiorPdfs(): Promise<{ good: Uint8Array; wrong: Uint8Array }> {
   const fonts = { display: readFileSync(join(ROOT, 'src/app/fonts/fredoka-latin.ttf')), body: readFileSync(join(ROOT, 'src/app/fonts/dosis-latin.ttf')) };
@@ -496,7 +630,7 @@ async function interiorPdfs(): Promise<{ good: Uint8Array; wrong: Uint8Array }> 
       trimHeight: h,
       bleed: false,
       sided: 'double',
-      front: { title: 'Morning Pages', subtitle: 'A guided journal', author: 'June Hart', belongsTo: true, copyright: 'Copyright 2026 June Hart. All rights reserved.' },
+      front: { title: 'Morning Pages', subtitle: 'A guided journal', author: 'Mara Ellison', belongsTo: true, copyright: 'Copyright 2026 Mara Ellison. All rights reserved.' },
       content: { kind: 'journal', style: 'lined-wide', count, dateLine: true },
       pageNumbers: true,
       limits: { min: 24, max: 828 },
@@ -865,6 +999,8 @@ async function videos(): Promise<void> {
     await sleep(1300);
     await click('#binding-toggle [data-v="paperback"]');
     await sleep(900);
+    await click('[data-tab="publish"]');
+    await sleep(1600);
     await click('[data-tab="interior"]');
     await sleep(1600);
     await click('[data-tab="designer"]');
@@ -917,9 +1053,11 @@ async function main(): Promise<void> {
     for (const m of ['light', 'dark'] as const) {
       MODE = m;
       log(`=== ${m} mode`);
+      if (want('screenshots') || want('publish')) await publishShots();
       if (want('screenshots')) await screenshots();
       if (want('screenshots') || want('tools')) await newToolShots();
       if (want('screenshots') || want('features')) await featureShots();
+      if (want('videos') || want('publish')) await publishVideo();
       if (want('videos')) await videos();
       if (want('videos') || want('tools')) await newToolVideos();
       if (want('videos') || want('features')) await featureVideos();
