@@ -113,7 +113,7 @@ describe('interior preflight', () => {
   });
 
   it('reads page sizes and embedded fonts from a real PDF', async () => {
-    const fonts = { display: readFileSync('src/app/fonts/fredoka-latin.woff2'), body: readFileSync('src/app/fonts/dosis-latin.woff2') };
+    const fonts = { display: readFileSync('src/app/fonts/fredoka-latin.ttf'), body: readFileSync('src/app/fonts/dosis-latin.ttf') };
     const plan = planInterior({
       trimWidth: 6,
       trimHeight: 9,

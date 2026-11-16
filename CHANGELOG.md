@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+- **Publish** tab: a finished book in, KDP's files out. Drop in a Word manuscript (.docx) and it is typeset into a print interior (EB Garamond, Crimson Pro or Libre Baskerville; justified text, chapter openings, scene breaks, running heads, page numbers and widow/orphan control, with KDP's gutter for the final page count), or drop in a finished interior PDF to check it. Preview two-page spreads, get a cover template for the exact page count, check a finished cover or build one from front and back art, and export the interior PDF, print cover PDF, eBook cover JPG and an EPUB.
+
+### Fixed
+- The tab bar cut off the last tabs on windows narrower than about 1440 px; it now tightens, drops the button labels and the logo text, and wraps onto its own row on tablets.
+- The glass panels no longer show a white highlight that follows the mouse.
+- PDFs embedded the app's fonts in WOFF2 web format, which is not valid inside a PDF (viewers fell back to other fonts and printers may reject it). All fonts are now embedded as TrueType.
+
 ## [0.9.0] - 2026-11-10
 
 ### Added

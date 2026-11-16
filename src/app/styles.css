@@ -477,3 +477,39 @@ dialog.projects { height: auto; max-height: min(720px, calc(100vh - 48px)); widt
 .project-row .meta { margin-right: auto; min-width: 0; }
 .project-row .meta b { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .project-row .meta span { font-size: .82rem; color: var(--ink-soft); }
+
+/* ---- Publish ---- */
+.pub-step h2 { display: flex; align-items: center; gap: 10px; }
+.step-n { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: var(--accent-ink); font-size: .85rem; }
+.pub-step + .pub-step { margin-top: 16px; }
+.pub-checks { display: grid; gap: 6px; align-content: start; padding-top: 22px; }
+.pub-warnings { margin: 8px 0 0; padding: 10px 14px 10px 30px; border-radius: 14px; background: var(--warn-soft, rgba(255, 179, 71, .15)); color: var(--ink); font-size: .92rem; }
+.spread-wrap { overflow-x: auto; padding: 18px; border-radius: 18px; background: color-mix(in srgb, var(--ink) 8%, transparent); }
+.spread { display: flex; justify-content: center; gap: 0; min-height: 320px; outline: none; }
+.spread-page { display: block; width: auto; background: #fff; box-shadow: 0 10px 28px -12px rgba(20, 24, 50, .45); }
+.spread-page.verso { border-right: 1px solid #ddd; }
+.spread-empty { background: transparent; box-shadow: none; }
+.spread-bar { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+.pub-files { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 12px; }
+.pub-checklist { margin: 0; padding-left: 1.3em; line-height: 1.6; }
+.drop.small { padding: 18px; }
+@media (max-width: 1560px) {
+  .projects-btn span, .guide-btn span { display: none; }
+  .projects-btn, .guide-btn { padding-inline: 10px; }
+}
+
+/* ---- header fit: nine tabs must stay visible down to tablet width ---- */
+.tabs { min-width: 0; flex: 0 1 auto; }
+@media (max-width: 1440px) {
+  .app-header { gap: 12px; }
+  .tab { padding: 9px 11px; font-size: .92rem; }
+}
+@media (max-width: 1180px) {
+  .brand-name { display: none; }
+  .tab { padding: 8px 9px; font-size: .86rem; }
+}
+@media (min-width: 701px) and (max-width: 980px) {
+  .app-header { flex-wrap: wrap; justify-content: space-between; }
+  .tabs { order: 3; flex-basis: 100%; justify-content: center; }
+}
+.preview[hidden], .pub-step[hidden] { display: none; }

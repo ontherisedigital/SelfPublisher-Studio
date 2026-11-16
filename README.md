@@ -14,6 +14,7 @@
 
 | Tool | What you get |
 | --- | --- |
+| **Publish** | Like Kindle Create for print: drop in a Word manuscript and get a typeset interior PDF (book fonts, chapters, running heads, page numbers, KDP margins and gutter), a cover sized to its page count, the print cover PDF, an eBook cover JPG and an EPUB. Or drop in a finished interior PDF to check it. |
 | **Cover template** | The exact canvas size (in, cm, mm, px) and a marked-up template for a **paperback** or **hardcover** (case laminate): bleed or wrap, trim lines, hinge, safe areas, spine text zone and barcode box. Download as PNG, JPG or PDF at actual size, plus a transparent guides overlay. |
 | **Kindle eBook** | The 1600 × 2560 px front-cover template (or any custom size) with KDP's rules: ratio, limits, border, what to leave out. |
 | **Preflight** | **Cover:** drop in your finished cover (PDF, PNG or JPG). It checks the page size and shape against your book, flags low resolution, and explains mismatches ("the width suggests a 240-page spine"). Your artwork is shown with the guides on top. **Interior:** checks an interior PDF's page size and bleed, page count (and that it matches the cover), margins and gutter on every page, embedded fonts and the real resolution of placed images. |

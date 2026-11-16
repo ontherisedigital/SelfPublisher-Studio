@@ -19,6 +19,7 @@
         <span class="brand-name">SelfPublisher <b>Studio</b></span>
       </div>
       <nav class="tabs" aria-label="Tools" id="tabs">
+        <button type="button" class="tab" data-tab="publish">Publish</button>
         <button type="button" class="tab" data-tab="cover">Cover template</button>
         <button type="button" class="tab" data-tab="interior">Interior</button>
         <button type="button" class="tab" data-tab="designer">Page designer</button>
@@ -212,6 +213,111 @@
               <button type="button" class="btn" data-bc="png" disabled>PNG (300 DPI)</button>
               <button type="button" class="btn" data-bc="svg" disabled>SVG</button>
             </div>
+          </div>
+        </section>
+
+        <!-- ---------- Publish: finished manuscript to KDP files ---------- -->
+        <section class="panel glass results publish" data-screen="publish" aria-labelledby="h-publish" hidden>
+          <h1 id="h-publish" class="visually-hidden">Publish a finished book</h1>
+          <div class="canvas-card">
+            <div class="eyebrow">Publish a finished book</div>
+            <div class="canvas-primary" id="pub-primary">Drop in your manuscript</div>
+            <div class="canvas-alt" id="pub-alt">Choose the binding, trim size and paper on the left. The page count is filled in for you.</div>
+          </div>
+
+          <div class="card pub-step">
+            <h2><span class="step-n">1</span> Your manuscript</h2>
+            <div class="seg full" role="group" aria-label="What you have" id="pub-source"></div>
+            <p class="hint" id="pub-source-hint"></p>
+            <label class="drop" id="pub-drop" for="pub-file">
+              <input id="pub-file" type="file" accept=".docx,.pdf,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document" />
+              <strong id="pub-drop-title">Choose your Word manuscript (.docx)</strong>
+              <span id="pub-drop-sub">or drop it here</span>
+            </label>
+            <p class="hint" id="pub-file-status"></p>
+            <ul class="pub-warnings" id="pub-warnings" hidden></ul>
+          </div>
+
+          <div class="card pub-step" id="pub-style-card">
+            <h2><span class="step-n">2</span> Book style</h2>
+            <div class="row3">
+              <div class="field tight"><label for="pub-title">Title</label><input id="pub-title" type="text" maxlength="200" /></div>
+              <div class="field tight"><label for="pub-subtitle">Subtitle</label><input id="pub-subtitle" type="text" maxlength="200" /></div>
+              <div class="field tight"><label for="pub-author">Author</label><input id="pub-author" type="text" maxlength="200" /></div>
+            </div>
+            <div class="row3">
+              <div class="field tight"><label for="pub-font">Font</label><select id="pub-font"></select></div>
+              <div class="field tight"><label for="pub-size">Text size</label><select id="pub-size"><option value="10.5">10.5 pt</option><option value="11">11 pt</option><option value="11.5">11.5 pt</option><option value="12">12 pt</option><option value="13">13 pt</option><option value="14">14 pt (large print)</option><option value="16">16 pt (large print)</option></select></div>
+              <div class="field tight"><label for="pub-leading">Line spacing</label><select id="pub-leading"><option value="1.3">Snug</option><option value="1.4">Normal</option><option value="1.5">Airy</option></select></div>
+            </div>
+            <div class="row3">
+              <div class="field tight"><label for="pub-headers">Running heads</label><select id="pub-headers"><option value="title">Author / book title</option><option value="chapter">Author / chapter title</option><option value="none">None</option></select></div>
+              <div class="field tight pub-checks">
+                <label class="check"><input type="checkbox" id="pub-recto" /> Chapters start on a right-hand page</label>
+                <label class="check"><input type="checkbox" id="pub-justify" /> Justified text</label>
+                <label class="check"><input type="checkbox" id="pub-numbers" /> Page numbers</label>
+              </div>
+              <div class="field tight pub-checks">
+                <label class="check"><input type="checkbox" id="pub-front" /> Add a title page and copyright page</label>
+              </div>
+            </div>
+            <div class="row3" id="pub-front-fields">
+              <div class="field tight"><label for="pub-copyright">Copyright page</label><textarea id="pub-copyright" rows="4" placeholder="Copyright © 2026 Your Name. All rights reserved.&#10;ISBN 978-..."></textarea></div>
+              <div class="field tight"><label for="pub-dedication">Dedication (optional)</label><textarea id="pub-dedication" rows="4" placeholder="For ..."></textarea></div>
+            </div>
+          </div>
+
+          <div class="card pub-step" id="pub-preview-card" hidden>
+            <h2><span class="step-n">3</span> Preview</h2>
+            <p class="hint" id="pub-summary"></p>
+            <div class="spread-wrap">
+              <div class="spread" id="pub-spread" aria-live="polite"></div>
+            </div>
+            <div class="spread-bar">
+              <button type="button" class="btn small" id="pub-prev" aria-label="Previous pages">‹ Previous</button>
+              <span class="hint" id="pub-pageno"></span>
+              <button type="button" class="btn small" id="pub-next" aria-label="Next pages">Next ›</button>
+            </div>
+            <ul class="checks" id="pub-checks"></ul>
+          </div>
+
+          <div class="card pub-step" id="pub-cover-card" hidden>
+            <h2><span class="step-n">4</span> Cover</h2>
+            <p class="hint" id="pub-cover-size"></p>
+            <div class="btn-row wide"><button type="button" class="btn subtle" id="pub-template">Download the cover template (PDF)</button></div>
+            <div class="seg full" role="group" aria-label="Cover source" id="pub-cover-source"></div>
+            <div id="pub-cover-wrap-in">
+              <label class="drop small" id="pub-cover-drop" for="pub-cover-file">
+                <input id="pub-cover-file" type="file" accept="application/pdf,image/png,image/jpeg,.pdf,.png,.jpg,.jpeg" />
+                <strong>Choose your finished full-wrap cover</strong>
+                <span>PDF, PNG or JPG: back, spine and front in one file</span>
+              </label>
+            </div>
+            <div id="pub-cover-art-in" hidden>
+              <div class="btn-row wide">
+                <label class="btn file" for="pub-front-art">Front cover image<input id="pub-front-art" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" /></label>
+                <label class="btn file" for="pub-back-art">Back cover image (optional)<input id="pub-back-art" type="file" accept="image/png,image/jpeg,.png,.jpg,.jpeg" /></label>
+              </div>
+              <div class="row3">
+                <label class="inline-color">Spine and back colour <input type="color" id="pub-spine-color" value="#1e2235" /></label>
+                <label class="inline-color">Spine text colour <input type="color" id="pub-spine-text-color" value="#ffffff" /></label>
+              </div>
+              <p class="hint" id="pub-art-status"></p>
+            </div>
+            <div class="verdict" id="pub-cover-verdict" hidden></div>
+            <ul class="checks" id="pub-cover-checks"></ul>
+            <div class="preview" id="pub-cover-preview" hidden></div>
+          </div>
+
+          <div class="card pub-step exports" id="pub-export-card" hidden>
+            <h2><span class="step-n">5</span> Files for KDP</h2>
+            <div class="pub-files">
+              <button type="button" class="btn primary" id="pub-dl-interior">Interior PDF</button>
+              <button type="button" class="btn primary" id="pub-dl-cover" disabled>Print cover PDF</button>
+              <button type="button" class="btn" id="pub-dl-ebook-cover" disabled>eBook cover JPG</button>
+              <button type="button" class="btn" id="pub-dl-epub">eBook EPUB</button>
+            </div>
+            <ol class="pub-checklist" id="pub-checklist"></ol>
           </div>
         </section>
 

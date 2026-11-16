@@ -5,10 +5,11 @@ import type { ExportFormat } from '../core/summary';
 import type { SceneMode } from '../core/scene';
 import { ASPECTS, BACKGROUNDS, LONG_SIDES, POSES, type PoseId } from '../core/mockup';
 import { PAGE_STYLES, type LowContentKind, type PageStyle, type Sided } from '../core/lowcontent';
+import { BOOK_FONTS, DEFAULT_BOOK_STYLE, type BookStyle } from '../core/typeset';
 
 export type SafeChoice = 'standard' | 'conservative';
 export type Dpi = 150 | 300;
-export type ScreenId = 'cover' | 'ebook' | 'preflight' | 'mockup' | 'interior' | 'designer' | 'puzzles';
+export type ScreenId = 'publish' | 'cover' | 'ebook' | 'preflight' | 'mockup' | 'interior' | 'designer' | 'puzzles';
 export type EbookPreset = 'ideal' | 'hd' | 'min' | 'custom';
 
 export interface EbookState {
@@ -51,6 +52,11 @@ export interface InteriorState {
   backColor: string;
 }
 
+export interface PublishState {
+  source: 'docx' | 'pdf';
+  style: BookStyle;
+}
+
 export interface AppState {
   screen: ScreenId;
   binding: Binding;
@@ -72,10 +78,11 @@ export interface AppState {
   ebook: EbookState;
   mockup: MockupState;
   interior: InteriorState;
+  publish: PublishState;
 }
 
 export const DEFAULT_STATE: AppState = {
-  screen: 'cover',
+  screen: 'publish',
   binding: 'paperback',
   trimId: '6x9',
   customWidth: 5.5,
@@ -118,6 +125,7 @@ export const DEFAULT_STATE: AppState = {
     spineTextColor: '#000000',
     backColor: '#ffffff',
   },
+  publish: { source: 'docx', style: { ...DEFAULT_BOOK_STYLE } },
 };
 
 export const STATE_KEY = 'selfpublisher-studio.v2';
@@ -141,7 +149,7 @@ export function loadState(): AppState {
     const raw = localStorage.getItem(KEY);
     if (!raw) return s;
     const o = JSON.parse(raw) as Record<string, unknown>;
-    if (['cover', 'ebook', 'preflight', 'mockup', 'interior', 'designer', 'puzzles'].includes(o.screen as string)) s.screen = o.screen as ScreenId;
+    if (['publish', 'cover', 'ebook', 'preflight', 'mockup', 'interior', 'designer', 'puzzles'].includes(o.screen as string)) s.screen = o.screen as ScreenId;
     if (o.binding === 'paperback' || o.binding === 'hardcover') s.binding = o.binding;
     if (typeof o.trimId === 'string') s.trimId = o.trimId;
     if (isNum(o.customWidth) && o.customWidth > 0) s.customWidth = o.customWidth;
@@ -188,6 +196,21 @@ export function loadState(): AppState {
       for (const k of ['dateLine', 'pageNumbers', 'belongsTo'] as const) if (typeof i[k] === 'boolean') t[k] = i[k] as boolean;
       for (const k of ['title', 'subtitle', 'author', 'copyright', 'spineText'] as const) if (typeof i[k] === 'string') t[k] = (i[k] as string).slice(0, 2000);
       for (const k of ['spineColor', 'spineTextColor', 'backColor'] as const) if (typeof i[k] === 'string' && /^#[0-9a-f]{6}$/i.test(i[k] as string)) t[k] = i[k] as string;
+    }
+    if (isRec(o.publish)) {
+      const pu = o.publish;
+      if (pu.source === 'docx' || pu.source === 'pdf') s.publish.source = pu.source;
+      if (isRec(pu.style)) {
+        const st = pu.style;
+        const t = s.publish.style;
+        if (BOOK_FONTS.some((f) => f.id === st.font)) t.font = st.font as BookStyle['font'];
+        if (isNum(st.size) && st.size >= 8 && st.size <= 16) t.size = st.size;
+        if (isNum(st.leading) && st.leading >= 1.1 && st.leading <= 2) t.leading = st.leading;
+        if (isNum(st.indent) && st.indent >= 0 && st.indent <= 1) t.indent = st.indent;
+        for (const k of ['justify', 'chapterRecto', 'pageNumbers', 'frontMatter'] as const) if (typeof st[k] === 'boolean') t[k] = st[k] as boolean;
+        if (st.headers === 'title' || st.headers === 'chapter' || st.headers === 'none') t.headers = st.headers;
+        for (const k of ['title', 'subtitle', 'author', 'copyright', 'dedication'] as const) if (typeof st[k] === 'string') t[k] = (st[k] as string).slice(0, 4000);
+      }
     }
   } catch {
     // Storage blocked or corrupt: fall back to defaults.

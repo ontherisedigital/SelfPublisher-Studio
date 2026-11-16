@@ -22,6 +22,9 @@ const TOPICS: Topic[] = [
     html: `
       <p><b>SelfPublisher Studio</b> gets your book ready for Amazon KDP: cover templates at the exact size, print-ready interiors
       for low-content books, covers built from your own art, a preflight check and 3D mockups for your listing.</p>
+      <h4>Publishing a book you have already written</h4>
+      <p>Open <b>Publish</b>, choose the trim size on the left, and drop in your Word manuscript. You get a formatted
+      interior, a cover that fits it, and the files to upload to KDP. See <b>Publish a finished book</b>.</p>
       <h4>Making a paperback or hardcover cover</h4>
       <ol>
         <li>Fill in <b>Your book</b> on the left: binding, trim size, ink and paper, and number of pages. Use the same
@@ -69,6 +72,39 @@ const TOPICS: Topic[] = [
       for that binding, or no spine text allowed.</p>
       <p class="guide-tip"><b>Tip:</b> the page count changes the spine width, and with it the whole cover size. If your
       interior gains or loses pages, make a new template.</p>`,
+  },
+  {
+    id: 'publish',
+    title: 'Publish a finished book',
+    html: `
+      <p>Use <b>Publish</b> when your book is written and edited and you only need it formatted for KDP, as with Kindle
+      Create. For books you make in the app (coloring, journals, planners, puzzles) use the <b>Interior</b> tab.</p>
+      <ol>
+        <li>On the left, choose the <b>binding, trim size and paper</b>. You don't need to enter a page count.</li>
+        <li><b>Your manuscript</b>: drop in a Word file (.docx), or a finished interior PDF made elsewhere.
+          <ul>
+            <li>Chapters are found from <b>Heading 1</b> styles, or from lines such as "Chapter 1", "Prologue" or
+            "Epilogue". Use Heading 1 in Word for the most reliable result.</li>
+            <li>Italic, bold, centred lines and scene breaks (a line of <b>* * *</b> or <b>#</b>) are kept. Word's
+            fonts, sizes, spacing and empty lines are replaced by the book style.</li>
+            <li>Pictures, tables and footnotes are not supported yet; you are told if any were left out.</li>
+          </ul>
+        </li>
+        <li><b>Book style</b>: title, author, font, text size, line spacing, running heads, whether chapters start
+        on a right-hand page, and the title, copyright and dedication pages. The book is reset as you change them.</li>
+        <li><b>Preview</b>: page through two-page spreads, the way the printed book opens. The page count and the
+        gutter (the wider margin on the spine side) are worked out for you, and the cover size follows.</li>
+        <li><b>Cover</b>: download the template for exactly this page count and design on it, then drop in your
+        finished full-wrap cover to check it. Or build one from a front image (and an optional back image) with a
+        coloured spine.</li>
+        <li><b>Files for KDP</b>: the <b>Interior PDF</b> and the <b>Print cover PDF</b> are uploaded separately on
+        KDP's paperback or hardcover content page. For the Kindle eBook, upload the <b>EPUB</b> as the manuscript and
+        the <b>eBook cover JPG</b> as the cover. The checklist under the buttons says what to choose on KDP.</li>
+      </ol>
+      <p class="guide-tip"><b>Tip:</b> if you change the text size or trim size, the page count changes, and so does
+      the spine. Download the cover template again and resize your cover before you upload.</p>
+      <p class="guide-small">Fonts: EB Garamond, Crimson Pro and Libre Baskerville, free under the SIL Open Font
+      License, embedded in the PDF as KDP requires.</p>`,
   },
   {
     id: 'projects',

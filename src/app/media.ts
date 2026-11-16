@@ -1,6 +1,6 @@
 /** Images and PDF fonts shared by the Interior, Page designer and Puzzles screens. */
 
-import type { PdfFonts, PdfImage } from '../core';
+import type { BookFont, BookFontFiles, PdfFonts, PdfImage } from '../core';
 
 export interface PageImage extends PdfImage {
   id: number;
@@ -44,9 +44,9 @@ let fontCache: Promise<PdfFonts> | null = null;
 export function loadFonts(): Promise<PdfFonts> {
   const decode = (dataUrl: string) => Uint8Array.from(atob(dataUrl.slice(dataUrl.indexOf(',') + 1)), (c) => c.charCodeAt(0));
   fontCache ??= Promise.all([
-    import('./fonts/fredoka-latin.woff2?inline'),
-    import('./fonts/dosis-latin.woff2?inline'),
-    import('./fonts/arima-bold-latin.woff2?inline'),
+    import('./fonts/fredoka-latin.ttf?inline'),
+    import('./fonts/dosis-latin.ttf?inline'),
+    import('./fonts/arima-bold-latin.ttf?inline'),
   ]).then(([d, b, a]) => ({ display: decode(d.default), body: decode(b.default), accent: decode(a.default) }));
   return fontCache;
 }
@@ -61,4 +61,23 @@ export function measureText(text: string, size: number, font: keyof typeof FAMIL
   measureCtx ??= document.createElement('canvas').getContext('2d')!;
   measureCtx.font = `${font === 'accent' ? 700 : 500} ${size}px ${FAMILY[font]}, sans-serif`;
   return measureCtx.measureText(text).width;
+}
+
+// --- Book fonts (Publish tab): SIL Open Font License, see fonts/book/OFL.txt ---
+
+const BOOK_FONT_FILES = {
+  garamond: () => Promise.all([import('./fonts/book/eb-garamond-400-normal.ttf?inline'), import('./fonts/book/eb-garamond-400-italic.ttf?inline'), import('./fonts/book/eb-garamond-700-normal.ttf?inline'), import('./fonts/book/eb-garamond-700-italic.ttf?inline')]),
+  crimson: () => Promise.all([import('./fonts/book/crimson-pro-400-normal.ttf?inline'), import('./fonts/book/crimson-pro-400-italic.ttf?inline'), import('./fonts/book/crimson-pro-700-normal.ttf?inline'), import('./fonts/book/crimson-pro-700-italic.ttf?inline')]),
+  baskerville: () => Promise.all([import('./fonts/book/libre-baskerville-400-normal.ttf?inline'), import('./fonts/book/libre-baskerville-400-italic.ttf?inline'), import('./fonts/book/libre-baskerville-700-normal.ttf?inline'), import('./fonts/book/libre-baskerville-700-italic.ttf?inline')]),
+} as const;
+const bookFontCache = new Map<string, Promise<BookFontFiles>>();
+
+export function loadBookFonts(id: BookFont): Promise<BookFontFiles> {
+  const decode = (dataUrl: string) => Uint8Array.from(atob(dataUrl.slice(dataUrl.indexOf(',') + 1)), (c) => c.charCodeAt(0));
+  let p = bookFontCache.get(id);
+  if (!p) {
+    p = BOOK_FONT_FILES[id]().then(([r, i, b, bi]) => ({ regular: decode(r.default), italic: decode(i.default), bold: decode(b.default), boldItalic: decode(bi.default) }));
+    bookFontCache.set(id, p);
+  }
+  return p;
 }

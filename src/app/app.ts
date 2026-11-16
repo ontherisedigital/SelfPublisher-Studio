@@ -1,8 +1,9 @@
 import type { CoverLayout } from '../core';
 import { initBookPanel, type BookResult } from './book';
 import type { Ctx, Screen } from './context';
-import { $, initSheen, moveInk } from './dom';
+import { $, moveInk } from './dom';
 import { initBarcode } from './barcode';
+import { initPublishScreen } from './screens/publish';
 import { initProjects } from './projects';
 import { initGuide } from './guide';
 import { initCoverScreen } from './screens/cover';
@@ -14,7 +15,7 @@ import { initMockupScreen } from './screens/mockup';
 import { initPreflightScreen } from './screens/preflight';
 import { loadState, saveState, type ScreenId } from './state';
 
-const SCREENS: ScreenId[] = ['cover', 'interior', 'designer', 'puzzles', 'ebook', 'preflight', 'mockup'];
+const SCREENS: ScreenId[] = ['publish', 'cover', 'interior', 'designer', 'puzzles', 'ebook', 'preflight', 'mockup'];
 
 export function initApp(): void {
   const state = loadState();
@@ -57,7 +58,7 @@ export function initApp(): void {
     panel.write();
     onBookChange();
   };
-  for (const s of [initCoverScreen(ctx), initInteriorScreen({ ...ctx, setPages, show: (id) => show(id) }), initDesignerScreen({ ...ctx, show: (id) => show(id) }), initPuzzlesScreen({ ...ctx, show: (id) => show(id) }), initEbookScreen(ctx), initPreflightScreen({ ...ctx, setPages }), initMockupScreen(ctx)]) screens.set(s.id, s);
+  for (const s of [initPublishScreen({ ...ctx, setPages }), initCoverScreen(ctx), initInteriorScreen({ ...ctx, setPages, show: (id) => show(id) }), initDesignerScreen({ ...ctx, show: (id) => show(id) }), initPuzzlesScreen({ ...ctx, show: (id) => show(id) }), initEbookScreen(ctx), initPreflightScreen({ ...ctx, setPages }), initMockupScreen(ctx)]) screens.set(s.id, s);
 
   const tabBar = $('tabs');
   tabBar.insertAdjacentHTML('afterbegin', '<span class="seg-ink" aria-hidden="true"></span>');
@@ -93,7 +94,7 @@ export function initApp(): void {
 
   for (const t of tabs) t.addEventListener('click', () => show(t.dataset.tab as ScreenId));
 
-  initSheen();
+  // The pointer-following sheen (initSheen) is off by request: it read as a white blob chasing the mouse.
   initGuide();
   initProjects();
   initBarcode();

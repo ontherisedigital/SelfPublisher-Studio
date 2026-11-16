@@ -489,7 +489,7 @@ async function screenshots(): Promise<void> {
 
 /** A clean 6 x 9 journal interior and a wrongly sized one, for the interior preflight. */
 async function interiorPdfs(): Promise<{ good: Uint8Array; wrong: Uint8Array }> {
-  const fonts = { display: readFileSync(join(ROOT, 'src/app/fonts/fredoka-latin.woff2')), body: readFileSync(join(ROOT, 'src/app/fonts/dosis-latin.woff2')) };
+  const fonts = { display: readFileSync(join(ROOT, 'src/app/fonts/fredoka-latin.ttf')), body: readFileSync(join(ROOT, 'src/app/fonts/dosis-latin.ttf')) };
   const make = (w: number, h: number, count: number) => {
     const plan = planInterior({
       trimWidth: w,

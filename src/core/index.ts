@@ -15,3 +15,7 @@ export * from './puzzles';
 export * from './interiorPreflight';
 export * from './barcode';
 export * from './project';
+export * from './zip';
+export * from './manuscript';
+export * from './typeset';
+export * from './epub';

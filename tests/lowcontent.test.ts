@@ -14,7 +14,7 @@ import {
   type InteriorInput,
 } from '../src/core';
 
-const fonts = { display: readFileSync('src/app/fonts/fredoka-latin.woff2'), body: readFileSync('src/app/fonts/dosis-latin.woff2') };
+const fonts = { display: readFileSync('src/app/fonts/fredoka-latin.ttf'), body: readFileSync('src/app/fonts/dosis-latin.ttf') };
 const noFront = { title: '', subtitle: '', author: '', belongsTo: false, copyright: '' };
 const img = (w = 2550, h = 3300) => ({ name: 'p.png', widthPx: w, heightPx: h });
 

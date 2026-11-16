@@ -22,9 +22,9 @@ import {
 } from '../src/core';
 
 const fonts = {
-  display: readFileSync('src/app/fonts/fredoka-latin.woff2'),
-  body: readFileSync('src/app/fonts/dosis-latin.woff2'),
-  accent: readFileSync('src/app/fonts/arima-bold-latin.woff2'),
+  display: readFileSync('src/app/fonts/fredoka-latin.ttf'),
+  body: readFileSync('src/app/fonts/dosis-latin.ttf'),
+  accent: readFileSync('src/app/fonts/arima-bold-latin.ttf'),
 };
 const safe = { x: 0.5, y: 0.5, w: 5, h: 8 };
 
