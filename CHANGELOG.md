@@ -4,6 +4,8 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+## [0.10.0] - 2026-11-16
+
 ### Added
 - **Publish** tab: a finished book in, KDP's files out. Drop in a Word manuscript (.docx) and it is typeset into a print interior (EB Garamond, Crimson Pro or Libre Baskerville; justified text, chapter openings, scene breaks, running heads, page numbers and widow/orphan control, with KDP's gutter for the final page count), or drop in a finished interior PDF to check it. Preview two-page spreads, get a cover template for the exact page count, check a finished cover or build one from front and back art, and export the interior PDF, print cover PDF, eBook cover JPG and an EPUB.
 
@@ -124,7 +126,8 @@ First release: the cover template generator.
 - Interior margin helpers (`src/core/interior.ts`) as groundwork for the planned interior formatter.
 - Test suite with golden values extracted from Amazon's KDP Print File Setup Calculator V5, plus an end-to-end desktop smoke test.
 
-[Unreleased]: https://github.com/ontherisedigital/SelfPublisher-Studio/compare/v0.9.0...HEAD
+[Unreleased]: https://github.com/ontherisedigital/SelfPublisher-Studio/compare/v0.10.0...HEAD
+[0.10.0]: https://github.com/ontherisedigital/SelfPublisher-Studio/compare/v0.9.0...v0.10.0
 [0.9.0]: https://github.com/ontherisedigital/SelfPublisher-Studio/compare/v0.8.0...v0.9.0
 [0.8.0]: https://github.com/ontherisedigital/SelfPublisher-Studio/compare/v0.7.0...v0.8.0
 [0.7.0]: https://github.com/ontherisedigital/SelfPublisher-Studio/compare/v0.6.0...v0.7.0

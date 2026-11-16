@@ -6,7 +6,7 @@
   <img src="docs/images/sample-template-6x9-200pp.svg" alt="Sample cover template for a 6 x 9 inch, 200 page book" width="760">
 </p>
 
-> **Status:** v0.9. Interior preflight, ISBN barcodes and saved book projects join the photo mockup backgrounds. A Page designer for planners and journals, a Puzzles tab (word search, crossword, maze, sudoku) and a built-in User Guide join the low-content interiors, covers from your own art, the cover templates, Kindle eBook covers, Preflight and 3D mockup (see the [changelog](CHANGELOG.md) and [roadmap](docs/ROADMAP.md)).
+> **Status:** v0.10. New **Publish** tab: a Word manuscript in, KDP's interior PDF, cover PDF, eBook cover and EPUB out. Interior preflight, ISBN barcodes and saved book projects join the photo mockup backgrounds. A Page designer for planners and journals, a Puzzles tab (word search, crossword, maze, sudoku) and a built-in User Guide join the low-content interiors, covers from your own art, the cover templates, Kindle eBook covers, Preflight and 3D mockup (see the [changelog](CHANGELOG.md) and [roadmap](docs/ROADMAP.md)).
 >
 > SelfPublisher Studio is an independent project. It is not affiliated with, endorsed by, or sponsored by Amazon. "Amazon", "KDP" and "Kindle Direct Publishing" are trademarks of Amazon.com, Inc. or its affiliates.
 
